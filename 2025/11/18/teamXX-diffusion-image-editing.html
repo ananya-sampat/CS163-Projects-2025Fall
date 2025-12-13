@@ -223,15 +223,7 @@ In this report, I investigate three diffusion-based image editing methods-SDEdit
   <li><a href="#challenges-and-limitations" id="markdown-toc-challenges-and-limitations">Challenges and Limitations</a></li>
   <li><a href="#future-directions" id="markdown-toc-future-directions">Future Directions</a></li>
   <li><a href="#conclusion" id="markdown-toc-conclusion">Conclusion</a></li>
-  <li><a href="#basic-syntax" id="markdown-toc-basic-syntax">Basic Syntax</a>    <ul>
-      <li><a href="#image" id="markdown-toc-image">Image</a></li>
-      <li><a href="#table" id="markdown-toc-table">Table</a></li>
-      <li><a href="#code-block" id="markdown-toc-code-block">Code Block</a></li>
-      <li><a href="#formula" id="markdown-toc-formula">Formula</a></li>
-      <li><a href="#more-markdown-syntax" id="markdown-toc-more-markdown-syntax">More Markdown Syntax</a></li>
-    </ul>
-  </li>
-  <li><a href="#reference" id="markdown-toc-reference">Reference</a></li>
+  <li><a href="#references" id="markdown-toc-references">References</a></li>
 </ul>
 
 <h2 id="1-background">1. Background</h2>
@@ -289,35 +281,26 @@ This equation formalizes how the model progressively removes noise, allowing it 
 Starting from a lightly noised version of the input image, the method applies reverse diffusion steps that gradually reintroduce fine-grained details while preserving the high-level structure. 
 This visualizes why SDEdit excels at structure-preserving edits.</p>
 
-<p>\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{Screenshot 2025-11-17 at 6.39.48 PM.png}
-    \caption{Illustration of SDEdit’s editing procedure: the input image is perturbed with controlled noise and then refined through the reverse SDE process. 
-    The structure of the original image is largely preserved while stylistic or semantic changes are introduced. 
-    Reprinted from Meng et al. (2021).}
-    \label{fig:sdedit_process}
-\end{figure}</p>
+<p><img src="/CS163-Projects-2025Fall/assets/images/teamXX/sde.png" alt="SDEdit editing pipeline" />
+<em>Fig. X. Illustration of SDEdit’s editing procedure. The input image is first perturbed with a controlled amount of noise and then refined through the reverse diffusion (SDE) process.
+The overall structure of the original image is largely preserved while stylistic or semantic changes are introduced.
+Reprinted from Meng et al. (2021).</em></p>
 
 <h3 id="applications">Applications</h3>
 <p>SDEdit is effective for a wide range of editing tasks, but particularly for those that benefit from maintaining the overall layout of the input image. Some typical applications are:
-\begin{itemize}
-    \item Style transfer: the process where an image changes its artistic style, yet still retains its shapes intact. 
-    \item Change of color or texture due to differential light and material.
-    \item Light structural edits: minor shape edits, fine details added.
-\end{itemize}
+    - Style transfer: the process where an image changes its artistic style, yet still retains its shapes intact. 
+    - Change of color or texture due to differential light and material.
+    - Light structural edits: minor shape edits, fine details added.
 Since the only difference from the standard diffusion pipeline is the choice of the noise level, SDEdit can be implemented without retraining the model. This made it widely accessible and easy to use when diffusion models first became popular.</p>
 
 <p>Figure~\ref{fig:sdedit_examples} illustrates several representative SDEdit outputs for a variety of editing tasks, including stroke-based painting, stroke-based editing, and image composition.
 These examples illustrate how SDEdit can preserve scene layout while making significant visual changes guided by sparse user input.
-This ability to maintain structure distinguishes SDEdit from earlier GAN-based editing techniques.
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{Screenshot 2025-11-17 at 6.40.02 PM.png}
-    \caption{Examples of SDEdit editing tasks, including stroke painting, stroke-based editing, and image compositing. 
-    SDEdit maintains the underlying structure while enabling stylistic and semantic changes. 
-    Reprinted from Meng et al. (2021).}
-    \label{fig:sdedit_examples}
-\end{figure}</p>
+This ability to maintain structure distinguishes SDEdit from earlier GAN-based editing techniques.</p>
+
+<p><img src="/CS163-Projects-2025Fall/assets/images/teamXX/strokebasedediting.png" alt="SDEdit editing examples" />
+<em>Fig. X. Examples of SDEdit editing tasks, including stroke painting, stroke-based editing, and image compositing.
+SDEdit preserves the underlying image structure while enabling stylistic and semantic changes.
+Reprinted from Meng et al. (2021).</em></p>
 
 <h3 id="technical-details">Technical Details</h3>
 <p>The model SDEdit uses the same U-Net architecture as standard DDPMs but modifies the starting point of the reverse process. Instead of sampling$x_T \sim \mathcal{N}(0, I)$, it constructs a partially noised version of the input image:</p>
@@ -346,15 +329,12 @@ This ability to maintain structure distinguishes SDEdit from earlier GAN-based e
 
 <h3 id="types-of-edits">Types of Edits</h3>
 
-<p>Since it is an attentional shift, Prompt-to-Prompt allows several kinds of fine-grained editing:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Editing of attributes: color, material, and minor visual properties.
-- Object replacement: this allows substituting one object for another in a way that the surrounding scene is preserved.
-- Changes in style or texture are applied so that the overall structure remains intact.
-- Selective modification: edits are triggered by only certain words in the prompt.
-</code></pre></div></div>
-
-<p>These capabilities enable Prompt-to-Prompt to make edits that are far more precise compared to the ones from SDEdit, particularly when the preferred change is related to a specific concept or region.</p>
+<p>Since it is an attentional shift, Prompt-to-Prompt allows several kinds of fine-grained editing:
+    - Editing of attributes: color, material, and minor visual properties.
+    - Object replacement: this allows substituting one object for another in a way that the surrounding scene is preserved.
+    - Changes in style or texture are applied so that the overall structure remains intact.
+    - Selective modification: edits are triggered by only certain words in the prompt.
+These capabilities enable Prompt-to-Prompt to make edits that are far more precise compared to the ones from SDEdit, particularly when the preferred change is related to a specific concept or region.</p>
 <h2 id="technical-details-1">Technical Details</h2>
 
 <p>Prompt-to-Prompt utilizes the cross-attention layers in the U-Net. At each step of denoising, the model computes attention maps that relate text tokens to spatial regions in the latent representation. Let \(A_{\text{orig}}\) and \(A_{\text{edit}}\) refer to the cross-attention maps extrated from the original and edited prompts respectively. Prompt-to-Prompt either freezes or blends these maps using</p>
@@ -367,15 +347,11 @@ This ability to maintain structure distinguishes SDEdit from earlier GAN-based e
 Figure~\ref{fig:p2p_attention} shows how the pixel-level queries interact with token keys and values to form attention maps, and how these can be modified to preserve or change parts of the image.
 The word swap, prompt refinement, and attention re-weighting editing strategies correspond directly to replacing or mixing these attention maps across timesteps.</p>
 
-<p>\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{03_ca_diagram.png}
-    \caption{Visualizing text-to-image cross-attention in Prompt-to-Prompt.
-Top: how pixel-level queries interact with prompt tokens to form cross-attention maps.
-Bottom: three ways of manipulating attention maps for editing—word swap, prompt refinement, and attention re-weighting.
-Reprinted from Hertz et al. (2022).}
-    \label{fig:p2p_attention}
-\end{figure}</p>
+<p><img src="/CS163-Projects-2025Fall/assets/images/teamXX/03_ca_diagram.png" alt="Cross-attention visualization in Prompt-to-Prompt" />
+<em>Fig. X. Visualizing text-to-image cross-attention in Prompt-to-Prompt.<br />
+Top: pixel-level queries interact with prompt tokens to form cross-attention maps.<br />
+Bottom: three attention manipulation strategies for editing—word substitution, prompt refinement, and attention re-weighting.<br />
+Reprinted from Hertz et al. (2022).</em></p>
 
 <h4 id="practical-insight-1">Practical Insight.</h4>
 <p>One subtle detail is that freezing attention maps across denoising steps implicitly constrains the latent geometry. This explains why Prompt-to-Prompt is remarkably good at preserving global structure even when the textual prompt introduces significant semantic changes.</p>
@@ -402,16 +378,12 @@ Reprinted from Hertz et al. (2022).}
 <p>During inference, the model takes as input an original image and a text instruction. These inputs drive the diffusion process through conditioning mechanisms inspired by those used in text-to-image models. It changes regions of the image concerning the instruction while keeping other aspects of its content intact. This setup allows for a wide range of edits, ranging from subtle adjustments to larger changes in both appearance and structure.</p>
 
 <h3 id="capabilities-and-types-of-edits">Capabilities and Types of Edits</h3>
-<p>The instructions can describe almost anything. Therefore, Pix2Pix allows for a wide range of edits. Common examples include the following:</p>
-
-<p>\begin{itemize}
-    \item Edit attributes including Color, Brightness, and style.
-    \item Object-level editing is the transformation, addition, or deletion of elements in the image.
-    \item Semantic transformations, for instance, changing a “cat” into a “fox.”
-    \item High-level aesthetic directives, such as “this photo should appear like a watercolor painting.
-\end{itemize}</p>
-
-<p>One of the strengths of InstructPix2Pix is that it can interpret relatively loose or open-ended instructions. While Prompt-to-Prompt requires carefully controlled prompt wording, InstructPix2Pix can respond to more natural, flexible phrasing.</p>
+<p>The instructions can describe almost anything. Therefore, Pix2Pix allows for a wide range of edits. Common examples include the following:
+    - Edit attributes including Color, Brightness, and style.
+    - Object-level editing is the transformation, addition, or deletion of elements in the image.
+    - Semantic transformations, for instance, changing a “cat” into a “fox.”
+    - High-level aesthetic directives, such as “this photo should appear like a watercolor painting.
+One of the strengths of InstructPix2Pix is that it can interpret relatively loose or open-ended instructions. While Prompt-to-Prompt requires carefully controlled prompt wording, InstructPix2Pix can respond to more natural, flexible phrasing.</p>
 
 <h3 id="technical-details-2">Technical Details</h3>
 
@@ -538,83 +510,26 @@ Reprinted from Hertz et al. (2022).}
 <p>Bringing all three together demonstrates how diffusion models approach image editing in quite different ways: SDEdit keeps most of the original image by adding only a small amount of noise, Prompt-to-Prompt uses changes in the text prompt to guide more specific edits, and InstructPix2Pix lets users describe edits in plain language. All three rely on the same diffusion process, but each solves slightly different problems.</p>
 
 <p>What stood out is that none of these methods are perfect, with some preserving structure better, others offering more control, and some being more flexible with instructions. But taken together, they show how fast the growth in diffusion-based editing has been and how many directions it can still go. And as these models get faster and easier to control, they will most probably become even more common in image editing tools.</p>
+<h2 id="references">References</h2>
 
-<p>\section*{References}
-\begin{itemize}
-    \item Chenlin Meng, Yang Song, Jiaming Song, Jiajun Wu, Jun-Yan Zhu, and Stefano Ermon. 
-    \textbf{``SDEdit: Guided Image Synthesis and Editing with Stochastic Differential Equations.’’}
-    arXiv preprint arXiv:2108.01073 (2021).</p>
+<ol>
+  <li>
+    <p>Chenlin Meng, Yang Song, Jiaming Song, Jiajun Wu, Jun-Yan Zhu, and Stefano Ermon.<br />
+<strong>“SDEdit: Guided Image Synthesis and Editing with Stochastic Differential Equations.”</strong><br />
+<em>arXiv preprint arXiv:2108.01073</em>, 2021.</p>
+  </li>
+  <li>
+    <p>Amir Hertz, Ron Mokady, Jay Tenenbaum, Kfir Aberman, Yael Pritch, and Daniel Cohen-Or.<br />
+<strong>“Prompt-to-Prompt Image Editing with Cross Attention Control.”</strong><br />
+<em>arXiv preprint arXiv:2208.01626</em>, 2022.</p>
+  </li>
+  <li>
+    <p>Tim Brooks, Aleksander Holynski, and Alexei A. Efros.<br />
+<strong>“InstructPix2Pix: Learning to Follow Image Editing Instructions.”</strong><br />
+<em>arXiv preprint arXiv:2211.09800</em>, 2023.</p>
+  </li>
+</ol>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\item Amir Hertz, Ron Mokady, Jay Tenenbaum, Kfir Aberman, Yael Pritch, and Daniel Cohen-Or. 
-\textbf{``Prompt-to-Prompt Image Editing with Cross Attention Control.''}
-arXiv preprint arXiv:2208.01626 (2022).
-
-\item Tim Brooks, Aleksander Holynski, and Alexei A. Efros. 
-\textbf{``InstructPix2Pix: Learning to Follow Image Editing Instructions.''}
-arXiv preprint arXiv:2211.09800 (2023). \end{itemize}
-</code></pre></div></div>
-
-<p>\end{document}</p>
-
-<p>Your survey starts here. You can refer to the <a href="https://github.com/lilianweng/lil-log/tree/master/_posts">source code</a> of <a href="https://lilianweng.github.io/lil-log/">lil’s blogs</a> for article structure ideas or Markdown syntax. We’ve provided a <a href="https://ucladeepvision.github.io/CS188-Projects-2022Winter/2017/06/21/an-overview-of-deep-learning.html">sample post</a> from Lilian Weng and you can find the source code <a href="https://raw.githubusercontent.com/UCLAdeepvision/CS188-Projects-2022Winter/main/_posts/2017-06-21-an-overview-of-deep-learning.md">here</a></p>
-
-<h2 id="basic-syntax">Basic Syntax</h2>
-<h3 id="image">Image</h3>
-<p>Please create a folder with the name of your team id under /assets/images/, put all your images into the folder and reference the images in your main content.</p>
-
-<p style="width: 400px; max-width: 100%;">You can add an image to your survey like this:
-<img src="/CS163-Projects-2025Fall/assets/images/UCLAdeepvision/object_detection.png" alt="YOLO" /></p>
-<p><em>Fig 1. YOLO: An object detection method in computer vision</em> [1].</p>
-
-<p>Please cite the image if it is taken from other people’s work.</p>
-
-<h3 id="table">Table</h3>
-<p>Here is an example for creating tables, including alignment syntax.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: left"> </th>
-      <th style="text-align: center">column 1</th>
-      <th style="text-align: right">column 2</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: left">row1</td>
-      <td style="text-align: center">Text</td>
-      <td style="text-align: right">Text</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">row2</td>
-      <td style="text-align: center">Text</td>
-      <td style="text-align: right">Text</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="code-block">Code Block</h3>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># This is a sample code block
-import torch
-print (torch.__version__)
-</code></pre></div></div>
-
-<h3 id="formula">Formula</h3>
-<p>Please use latex to generate formulas, such as:</p>
-
-\[\tilde{\mathbf{z}}^{(t)}_i = \frac{\alpha \tilde{\mathbf{z}}^{(t-1)}_i + (1-\alpha) \mathbf{z}_i}{1-\alpha^t}\]
-
-<p>or you can write in-text formula \(y = wx + b\).</p>
-
-<h3 id="more-markdown-syntax">More Markdown Syntax</h3>
-<p>You can find more Markdown syntax at <a href="https://www.markdownguide.org/basic-syntax/">this page</a>.</p>
-
-<h2 id="reference">Reference</h2>
-<p>Please make sure to cite properly in your work, for example:</p>
-
-<p>[1] Redmon, Joseph, et al. “You only look once: Unified, real-time object detection.” <em>Proceedings of the IEEE conference on computer vision and pattern recognition</em>. 2016.</p>
-
-<hr />
 
   </div>
 
