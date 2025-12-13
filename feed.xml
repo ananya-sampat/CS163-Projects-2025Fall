@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/CS163-Projects-2025Fall/feed.xml" rel="self" type="application/atom+xml" /><link href="/CS163-Projects-2025Fall/" rel="alternate" type="text/html" /><updated>2025-12-13T03:09:24+00:00</updated><id>/CS163-Projects-2025Fall/feed.xml</id><title type="html">2025F, UCLA CS163 Course Projects</title><subtitle>Course projects for UCLA CS163, Deep Learning in Compuver Vision</subtitle><author><name>UCLAdeepvision</name></author><entry><title type="html">Diffusion Models for Image Editing: A Study of SDEdit, Prompt-to-Prompt, and InstructPix2Pix</title><link href="/CS163-Projects-2025Fall/2025/11/18/teamXX-diffusion-image-editing.html" rel="alternate" type="text/html" title="Diffusion Models for Image Editing: A Study of SDEdit, Prompt-to-Prompt, and InstructPix2Pix" /><published>2025-11-18T00:00:00+00:00</published><updated>2025-11-18T00:00:00+00:00</updated><id>/CS163-Projects-2025Fall/2025/11/18/teamXX-diffusion-image-editing</id><content type="html" xml:base="/CS163-Projects-2025Fall/2025/11/18/teamXX-diffusion-image-editing.html"><![CDATA[<blockquote>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/CS163-Projects-2025Fall/feed.xml" rel="self" type="application/atom+xml" /><link href="/CS163-Projects-2025Fall/" rel="alternate" type="text/html" /><updated>2025-12-13T03:12:58+00:00</updated><id>/CS163-Projects-2025Fall/feed.xml</id><title type="html">2025F, UCLA CS163 Course Projects</title><subtitle>Course projects for UCLA CS163, Deep Learning in Compuver Vision</subtitle><author><name>UCLAdeepvision</name></author><entry><title type="html">Diffusion Models for Image Editing: A Study of SDEdit, Prompt-to-Prompt, and InstructPix2Pix</title><link href="/CS163-Projects-2025Fall/2025/11/18/team37-diffusion-image-editing.html" rel="alternate" type="text/html" title="Diffusion Models for Image Editing: A Study of SDEdit, Prompt-to-Prompt, and InstructPix2Pix" /><published>2025-11-18T00:00:00+00:00</published><updated>2025-11-18T00:00:00+00:00</updated><id>/CS163-Projects-2025Fall/2025/11/18/team37-diffusion-image-editing</id><content type="html" xml:base="/CS163-Projects-2025Fall/2025/11/18/team37-diffusion-image-editing.html"><![CDATA[<blockquote>
   <p>Image editing stands at the heart of computer vision applications and enables object attribute modifications, style changes, or transformations in general appearance while retaining much of the structural information about an image. Classic deep learning methods, in particular the GAN-based approach, suffer from this balancing act. They either introduce artifacts, distort salient features, or fail to preserve the original content when performing edits.
 Recently, diffusion models have emerged as a powerful alternative. Instead of generating an image with a single forward pass, diffusion models progressively remove noise according to a series of denoising steps. This iterative structure makes them particularly suitable for editing: partial noise levels can preserve the content, cross-attention layers control which regions change, and textual instructions guide the model to make targeted changes. For this reason, diffusion-based editing methods are among the most flexible and reliable tools in modern image manipulation.
 In this report, I investigate three diffusion-based image editing methods-SDEdit, Prompt-to-Prompt, and InstructPix2Pix-each representing a different stage in the evolution of editing techniques. SDEdit showcases how diffusion is able to maintain structure during edits, Prompt-to-Prompt introduces fine-grained control through prompt manipulation, and InstructPix2Pix allows for natural-language-driven edits without large model retraining. All together, these works highlight the versatility of diffusion models and illustrate how iterative denoising can support a wide range of editing tasks.</p>
@@ -58,7 +58,7 @@ In this report, I investigate three diffusion-based image editing methods-SDEdit
 <h3 id="11-forward-and-reverse-processes">1.1 Forward and Reverse Processes</h3>
 <p>The forward process progressively adds noise to an image over some predefined number of steps. Eventually, this results in a sample that bears no resemblance to the original content, but the noising schedule is carefully designed so the corruption is predictable. The reverse process, which the model learns, takes a noisy image and removes noise one step at a time. Each such denoising step is handled by a neural network, usually a U-Net, that predicts the noise added at that stage. The model can generate new images or modify existing ones by chaining these predictions together.</p>
 
-<p><img src="/assets/images/teamXX/forward.png" alt="Diffusion pipeline" />
+<p><img src="/assets/images/team37/forward.png" alt="Diffusion pipeline" />
 *Fig 1. Overview of the diffusion process. 
     Left: forward noising, where Gaussian noise is incrementally added to the image over $T$ steps. 
     Right: reverse denoising, which the model learns to perform step by step to reconstruct an image sample. 
@@ -107,7 +107,7 @@ This equation formalizes how the model progressively removes noise, allowing it 
 Starting from a lightly noised version of the input image, the method applies reverse diffusion steps that gradually reintroduce fine-grained details while preserving the high-level structure. 
 This visualizes why SDEdit excels at structure-preserving edits.</p>
 
-<p><img src="/CS163-Projects-2025Fall/assets/images/teamXX/sde.png" alt="SDEdit editing pipeline" />
+<p><img src="/CS163-Projects-2025Fall/assets/images/team37/sde.png" alt="SDEdit editing pipeline" />
 <em>Fig. X. Illustration of SDEdit’s editing procedure. The input image is first perturbed with a controlled amount of noise and then refined through the reverse diffusion (SDE) process.
 The overall structure of the original image is largely preserved while stylistic or semantic changes are introduced.
 Reprinted from Meng et al. (2021).</em></p>
@@ -123,7 +123,7 @@ Since the only difference from the standard diffusion pipeline is the choice of 
 These examples illustrate how SDEdit can preserve scene layout while making significant visual changes guided by sparse user input.
 This ability to maintain structure distinguishes SDEdit from earlier GAN-based editing techniques.</p>
 
-<p><img src="/CS163-Projects-2025Fall/assets/images/teamXX/strokebasedediting.png" alt="SDEdit editing examples" />
+<p><img src="/CS163-Projects-2025Fall/assets/images/team37/strokebasedediting.png" alt="SDEdit editing examples" />
 <em>Fig. X. Examples of SDEdit editing tasks, including stroke painting, stroke-based editing, and image compositing.
 SDEdit preserves the underlying image structure while enabling stylistic and semantic changes.
 Reprinted from Meng et al. (2021).</em></p>
@@ -173,7 +173,7 @@ These capabilities enable Prompt-to-Prompt to make edits that are far more preci
 Figure~\ref{fig:p2p_attention} shows how the pixel-level queries interact with token keys and values to form attention maps, and how these can be modified to preserve or change parts of the image.
 The word swap, prompt refinement, and attention re-weighting editing strategies correspond directly to replacing or mixing these attention maps across timesteps.</p>
 
-<p><img src="/CS163-Projects-2025Fall/assets/images/teamXX/03_ca_diagram.png" alt="Cross-attention visualization in Prompt-to-Prompt" />
+<p><img src="/CS163-Projects-2025Fall/assets/images/team37/03_ca_diagram.png" alt="Cross-attention visualization in Prompt-to-Prompt" />
 <em>Fig. X. Visualizing text-to-image cross-attention in Prompt-to-Prompt.<br />
 Top: pixel-level queries interact with prompt tokens to form cross-attention maps.<br />
 Bottom: three attention manipulation strategies for editing—word substitution, prompt refinement, and attention re-weighting.<br />
