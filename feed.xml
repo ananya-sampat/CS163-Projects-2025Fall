@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/CS163-Projects-2025Fall/feed.xml" rel="self" type="application/atom+xml" /><link href="/CS163-Projects-2025Fall/" rel="alternate" type="text/html" /><updated>2025-12-13T01:27:05+00:00</updated><id>/CS163-Projects-2025Fall/feed.xml</id><title type="html">2025F, UCLA CS163 Course Projects</title><subtitle>Course projects for UCLA CS163, Deep Learning in Compuver Vision</subtitle><author><name>UCLAdeepvision</name></author><entry><title type="html">Diffusion Models for Image Editing: A Study of SDEdit, Prompt-to-Prompt, and InstructPix2Pix</title><link href="/CS163-Projects-2025Fall/2025/11/18/teamXX-diffusion-image-editing.html" rel="alternate" type="text/html" title="Diffusion Models for Image Editing: A Study of SDEdit, Prompt-to-Prompt, and InstructPix2Pix" /><published>2025-11-18T00:00:00+00:00</published><updated>2025-11-18T00:00:00+00:00</updated><id>/CS163-Projects-2025Fall/2025/11/18/teamXX-diffusion-image-editing</id><content type="html" xml:base="/CS163-Projects-2025Fall/2025/11/18/teamXX-diffusion-image-editing.html"><![CDATA[<blockquote>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/CS163-Projects-2025Fall/feed.xml" rel="self" type="application/atom+xml" /><link href="/CS163-Projects-2025Fall/" rel="alternate" type="text/html" /><updated>2025-12-13T01:29:23+00:00</updated><id>/CS163-Projects-2025Fall/feed.xml</id><title type="html">2025F, UCLA CS163 Course Projects</title><subtitle>Course projects for UCLA CS163, Deep Learning in Compuver Vision</subtitle><author><name>UCLAdeepvision</name></author><entry><title type="html">Diffusion Models for Image Editing: A Study of SDEdit, Prompt-to-Prompt, and InstructPix2Pix</title><link href="/CS163-Projects-2025Fall/2025/11/18/teamXX-diffusion-image-editing.html" rel="alternate" type="text/html" title="Diffusion Models for Image Editing: A Study of SDEdit, Prompt-to-Prompt, and InstructPix2Pix" /><published>2025-11-18T00:00:00+00:00</published><updated>2025-11-18T00:00:00+00:00</updated><id>/CS163-Projects-2025Fall/2025/11/18/teamXX-diffusion-image-editing</id><content type="html" xml:base="/CS163-Projects-2025Fall/2025/11/18/teamXX-diffusion-image-editing.html"><![CDATA[<blockquote>
   <p>Image editing stands at the heart of computer vision applications and enables object attribute modifications, style changes, or transformations in general appearance while retaining much of the structural information about an image. Classic deep learning methods, in particular the GAN-based approach, suffer from this balancing act. They either introduce artifacts, distort salient features, or fail to preserve the original content when performing edits.
 Recently, diffusion models have emerged as a powerful alternative. Instead of generating an image with a single forward pass, diffusion models progressively remove noise according to a series of denoising steps. This iterative structure makes them particularly suitable for editing: partial noise levels can preserve the content, cross-attention layers control which regions change, and textual instructions guide the model to make targeted changes. For this reason, diffusion-based editing methods are among the most flexible and reliable tools in modern image manipulation.
 In this report, I investigate three diffusion-based image editing methods-SDEdit, Prompt-to-Prompt, and InstructPix2Pix-each representing a different stage in the evolution of editing techniques. SDEdit showcases how diffusion is able to maintain structure during edits, Prompt-to-Prompt introduces fine-grained control through prompt manipulation, and InstructPix2Pix allows for natural-language-driven edits without large model retraining. All together, these works highlight the versatility of diffusion models and illustrate how iterative denoising can support a wide range of editing tasks.</p>
@@ -24,13 +24,16 @@ In this report, I investigate three diffusion-based image editing methods-SDEdit
   <li><a href="#prompt-to-prompt" id="markdown-toc-prompt-to-prompt">Prompt-to-Prompt</a>    <ul>
       <li><a href="#introduction-to-approaches" id="markdown-toc-introduction-to-approaches">Introduction to Approaches</a></li>
       <li><a href="#types-of-edits" id="markdown-toc-types-of-edits">Types of Edits</a></li>
+    </ul>
+  </li>
+  <li><a href="#technical-details-1" id="markdown-toc-technical-details-1">Technical Details</a>    <ul>
       <li><a href="#strengths-and-limitations-1" id="markdown-toc-strengths-and-limitations-1">Strengths and Limitations</a></li>
     </ul>
   </li>
   <li><a href="#instructpix2pix" id="markdown-toc-instructpix2pix">InstructPix2Pix</a>    <ul>
       <li><a href="#overview-of-methods" id="markdown-toc-overview-of-methods">Overview of Methods</a></li>
       <li><a href="#capabilities-and-types-of-edits" id="markdown-toc-capabilities-and-types-of-edits">Capabilities and Types of Edits</a></li>
-      <li><a href="#technical-details-1" id="markdown-toc-technical-details-1">Technical Details</a></li>
+      <li><a href="#technical-details-2" id="markdown-toc-technical-details-2">Technical Details</a></li>
       <li><a href="#strengths-and-limitations-2" id="markdown-toc-strengths-and-limitations-2">Strengths and Limitations</a></li>
     </ul>
   </li>
@@ -171,14 +174,14 @@ This ability to maintain structure distinguishes SDEdit from earlier GAN-based e
 
 <p>Since it is an attentional shift, Prompt-to-Prompt allows several kinds of fine-grained editing:</p>
 
-<p>\begin{itemize}
-    \item Editing of attributes: color, material, and minor visual properties.
-    \item Object replacement: this allows substituting one object for another in a way that the surrounding scene is preserved.
-    \item Changes in style or texture are applied so that the overall structure remains intact.
-    \item Selective modification: edits are triggered by only certain words in the prompt.
-\end{itemize}
-These capabilities enable Prompt-to-Prompt to make edits that are far more precise compared to the ones from SDEdit, particularly when the preferred change is related to a specific concept or region.
-\subsection{Technical Details}</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Editing of attributes: color, material, and minor visual properties.
+- Object replacement: this allows substituting one object for another in a way that the surrounding scene is preserved.
+- Changes in style or texture are applied so that the overall structure remains intact.
+- Selective modification: edits are triggered by only certain words in the prompt.
+</code></pre></div></div>
+
+<p>These capabilities enable Prompt-to-Prompt to make edits that are far more precise compared to the ones from SDEdit, particularly when the preferred change is related to a specific concept or region.</p>
+<h2 id="technical-details-1">Technical Details</h2>
 
 <p>Prompt-to-Prompt utilizes the cross-attention layers in the U-Net. At each step of denoising, the model computes attention maps that relate text tokens to spatial regions in the latent representation. Let \(A_{\text{orig}}\) and \(A_{\text{edit}}\) refer to the cross-attention maps extrated from the original and edited prompts respectively. Prompt-to-Prompt either freezes or blends these maps using</p>
 
@@ -233,7 +236,7 @@ Edits which require large geometric changes remain hard; attention manipulation 
 
 <p>One of the strengths of InstructPix2Pix is that it can interpret relatively loose or open-ended instructions. While Prompt-to-Prompt requires carefully controlled prompt wording, InstructPix2Pix can respond to more natural, flexible phrasing.</p>
 
-<h3 id="technical-details-1">Technical Details</h3>
+<h3 id="technical-details-2">Technical Details</h3>
 
 <p>InstructPix2Pix is trained with synthetic triplets \((x, y, c)\), where $x$ is the original image, \(y\) is an edited version created by Stable Diffusion, and $c$ is a natural-language instruction generated by a language model. The model is conditioned jointly on the image and the instruction using classifier-free guidance:</p>
 
