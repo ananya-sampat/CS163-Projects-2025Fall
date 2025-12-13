@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/CS163-Projects-2025Fall/feed.xml" rel="self" type="application/atom+xml" /><link href="/CS163-Projects-2025Fall/" rel="alternate" type="text/html" /><updated>2025-12-13T00:47:06+00:00</updated><id>/CS163-Projects-2025Fall/feed.xml</id><title type="html">2025F, UCLA CS163 Course Projects</title><subtitle>Course projects for UCLA CS163, Deep Learning in Compuver Vision</subtitle><author><name>UCLAdeepvision</name></author><entry><title type="html">Diffusion Models for Image Editing: A Study of SDEdit, Prompt-to-Prompt, and InstructPix2Pix</title><link href="/CS163-Projects-2025Fall/2025/11/18/teamXX-diffusion-image-editing.html" rel="alternate" type="text/html" title="Diffusion Models for Image Editing: A Study of SDEdit, Prompt-to-Prompt, and InstructPix2Pix" /><published>2025-11-18T00:00:00+00:00</published><updated>2025-11-18T00:00:00+00:00</updated><id>/CS163-Projects-2025Fall/2025/11/18/teamXX-diffusion-image-editing</id><content type="html" xml:base="/CS163-Projects-2025Fall/2025/11/18/teamXX-diffusion-image-editing.html"><![CDATA[<blockquote>
+  <p>This block is a brief introduction of your project. You can put your abstract here or any headers you want the readers to know.</p>
+</blockquote>
+
+<!--more-->
+<ul id="markdown-toc">
+  <li><a href="#1-introduction" id="markdown-toc-1-introduction">1. Introduction</a></li>
+  <li><a href="#2-background" id="markdown-toc-2-background">2. Background</a>    <ul>
+      <li><a href="#21-forward-and-reverse-processes" id="markdown-toc-21-forward-and-reverse-processes">2.1 Forward and Reverse Processes</a></li>
+      <li><a href="#why-diffusion-models-support-image-editing" id="markdown-toc-why-diffusion-models-support-image-editing">Why Diffusion Models Support Image Editing</a></li>
+      <li><a href="#image-editing-task-categories" id="markdown-toc-image-editing-task-categories">Image Editing Task Categories</a></li>
+      <li><a href="#technical-perspective-on-diffusion-models" id="markdown-toc-technical-perspective-on-diffusion-models">Technical Perspective on Diffusion Models</a></li>
+    </ul>
+  </li>
+  <li><a href="#basic-syntax" id="markdown-toc-basic-syntax">Basic Syntax</a>    <ul>
+      <li><a href="#image" id="markdown-toc-image">Image</a></li>
+      <li><a href="#table" id="markdown-toc-table">Table</a></li>
+      <li><a href="#code-block" id="markdown-toc-code-block">Code Block</a></li>
+      <li><a href="#formula" id="markdown-toc-formula">Formula</a></li>
+      <li><a href="#more-markdown-syntax" id="markdown-toc-more-markdown-syntax">More Markdown Syntax</a></li>
+    </ul>
+  </li>
+  <li><a href="#reference" id="markdown-toc-reference">Reference</a></li>
+</ul>
+
+<h2 id="1-introduction">1. Introduction</h2>
+<p>Image editing stands at the heart of computer vision applications and enables object attribute modifications, style changes, or transformations in general appearance while retaining much of the structural information about an image. Classic deep learning methods, in particular the GAN-based approach, suffer from this balancing act. They either introduce artifacts, distort salient features, or fail to preserve the original content when performing edits.</p>
+
+<p>Recently, diffusion models have emerged as a powerful alternative. Instead of generating an image with a single forward pass, diffusion models progressively remove noise according to a series of denoising steps. This iterative structure makes them particularly suitable for editing: partial noise levels can preserve the content, cross-attention layers control which regions change, and textual instructions guide the model to make targeted changes. For this reason, diffusion-based editing methods are among the most flexible and reliable tools in modern image manipulation.</p>
+
+<p>In this report, I investigate three diffusion-based image editing methods-SDEdit, Prompt-to-Prompt, and InstructPix2Pix-each representing a different stage in the evolution of editing techniques. SDEdit showcases how diffusion is able to maintain structure during edits, Prompt-to-Prompt introduces fine-grained control through prompt manipulation, and InstructPix2Pix allows for natural-language-driven edits without large model retraining. All together, these works highlight the versatility of diffusion models and illustrate how iterative denoising can support a wide range of editing tasks.</p>
+
+<h2 id="2-background">2. Background</h2>
+<p>Diffusion models are generative models that create images by learning to reverse a gradual noising process. During training, an image is repeatedly corrupted through the addition of Gaussian noise until it is almost indistinguishable from pure noise. Then the model is trained to do the opposite: starting from the noise, denoising it step by step to recover the distribution of original images. Although this idea is conceptually simple, the iterative nature of the denoising process makes diffusion models considerably more stable and controllable than earlier approaches to generative image synthesis.</p>
+
+<h3 id="21-forward-and-reverse-processes">2.1 Forward and Reverse Processes</h3>
+<p>The forward process progressively adds noise to an image over some predefined number of steps. Eventually, this results in a sample that bears no resemblance to the original content, but the noising schedule is carefully designed so the corruption is predictable. The reverse process, which the model learns, takes a noisy image and removes noise one step at a time. Each such denoising step is handled by a neural network, usually a U-Net, that predicts the noise added at that stage. The model can generate new images or modify existing ones by chaining these predictions together.</p>
+
+<p><img src="/assets/images/teamXX/forward.png" alt="Diffusion pipeline" />
+*Fig 1. Overview of the diffusion process. 
+    Left: forward noising, where Gaussian noise is incrementally added to the image over $T$ steps. 
+    Right: reverse denoising, which the model learns to perform step by step to reconstruct an image sample. 
+    This formulation underlies all subsequent diffusion-based editing techniques. *</p>
+
+<h3 id="why-diffusion-models-support-image-editing">Why Diffusion Models Support Image Editing</h3>
+
+<p>This is particularly effective for editing, since diffusion models allow fine control over how much of the original image to retain. By adjusting the amount of noise injected before running the reverse process, the model can either keep most of the structure intact-when the noise is low-or make more dramatic changes-when the noise is high. Further, many diffusion models make use of attention mechanisms, which naturally yield “handles” useful for directing edits. For instance, cross-attention maps link parts of a text prompt to specific regions of an image, allowing updates to be localized or constrained. Combining this preservation of structure with flexible conditioning allows diffusion models to perform a broad range of editing tasks.</p>
+
+<h3 id="image-editing-task-categories">Image Editing Task Categories</h3>
+
+<p>Editing images itself encompasses many types of transformations. Some edits aim to alter attributes-for example, color, lighting, or style-of an image, while the structure of the scene remains unchanged. Others include more semantic changes such as adding or removing objects or changing textures. More advanced methods support natural-language guidance where a user can describe the target edit in plain text. Diffusion-based methods have seen very successful applications across all these categories and often result in edits that preserve much more detail and coherence compared to earlier methods.</p>
+
+<h3 id="technical-perspective-on-diffusion-models">Technical Perspective on Diffusion Models</h3>
+
+<p>Most models based on diffusion define the forward noising process as a sequence of Gaussian transitions:</p>
+
+<p>[
+q(x_t \mid x_{t-1}) = \mathcal{N}\left(x_t; \sqrt{1-\beta_t}\, x_{t-1},\, \beta_t I \right),
+]</p>
+
+<p>Here, $\alpha_t = 1 - \beta_t$ and $\bar{\alpha}<em>t = \prod</em>{s=1}^t \alpha_s$ denote the cumulative noise scheduling terms used in DDPMs.</p>
+
+<p>$\beta_t$ controls the amount of noise added at each step. The model then learns the reverse process $p_\theta(x_{t-1} \mid x_t)$, ussually parameterized by a U-Net that predicts the noise component $\epsilon_\theta(x_t, t)$. During either generation or editing, the model iteratively ``denoises’’ a sample $x_T$ (pure noise) or a partially noised input image $x_t$ to reconstruct a coherent output.</p>
+
+<p>This underlying formulation is common to the various editing methods discussed in later sections; each technique conditions or modifies this denoising process differently to achieve its specific editing behavior.</p>
+
+<p>Your survey starts here. You can refer to the <a href="https://github.com/lilianweng/lil-log/tree/master/_posts">source code</a> of <a href="https://lilianweng.github.io/lil-log/">lil’s blogs</a> for article structure ideas or Markdown syntax. We’ve provided a <a href="https://ucladeepvision.github.io/CS188-Projects-2022Winter/2017/06/21/an-overview-of-deep-learning.html">sample post</a> from Lilian Weng and you can find the source code <a href="https://raw.githubusercontent.com/UCLAdeepvision/CS188-Projects-2022Winter/main/_posts/2017-06-21-an-overview-of-deep-learning.md">here</a></p>
+
+<h2 id="basic-syntax">Basic Syntax</h2>
+<h3 id="image">Image</h3>
+<p>Please create a folder with the name of your team id under /assets/images/, put all your images into the folder and reference the images in your main content.</p>
+
+<p style="width: 400px; max-width: 100%;">You can add an image to your survey like this:
+<img src="/CS163-Projects-2025Fall/assets/images/UCLAdeepvision/object_detection.png" alt="YOLO" /></p>
+<p><em>Fig 1. YOLO: An object detection method in computer vision</em> [1].</p>
+
+<p>Please cite the image if it is taken from other people’s work.</p>
+
+<h3 id="table">Table</h3>
+<p>Here is an example for creating tables, including alignment syntax.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left"> </th>
+      <th style="text-align: center">column 1</th>
+      <th style="text-align: right">column 2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">row1</td>
+      <td style="text-align: center">Text</td>
+      <td style="text-align: right">Text</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">row2</td>
+      <td style="text-align: center">Text</td>
+      <td style="text-align: right">Text</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="code-block">Code Block</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># This is a sample code block
+import torch
+print (torch.__version__)
+</code></pre></div></div>
+
+<h3 id="formula">Formula</h3>
+<p>Please use latex to generate formulas, such as:</p>
+
+\[\tilde{\mathbf{z}}^{(t)}_i = \frac{\alpha \tilde{\mathbf{z}}^{(t-1)}_i + (1-\alpha) \mathbf{z}_i}{1-\alpha^t}\]
+
+<p>or you can write in-text formula \(y = wx + b\).</p>
+
+<h3 id="more-markdown-syntax">More Markdown Syntax</h3>
+<p>You can find more Markdown syntax at <a href="https://www.markdownguide.org/basic-syntax/">this page</a>.</p>
+
+<h2 id="reference">Reference</h2>
+<p>Please make sure to cite properly in your work, for example:</p>
+
+<p>[1] Redmon, Joseph, et al. “You only look once: Unified, real-time object detection.” <em>Proceedings of the IEEE conference on computer vision and pattern recognition</em>. 2016.</p>
+
+<hr />]]></content><author><name>Ananya Sampat</name></author><summary type="html"><![CDATA[This block is a brief introduction of your project. You can put your abstract here or any headers you want the readers to know.]]></summary></entry><entry><title type="html">Post Template</title><link href="/CS163-Projects-2025Fall/2024/01/01/team00-instruction-to-post.html" rel="alternate" type="text/html" title="Post Template" /><published>2024-01-01T00:00:00+00:00</published><updated>2024-01-01T00:00:00+00:00</updated><id>/CS163-Projects-2025Fall/2024/01/01/team00-instruction-to-post</id><content type="html" xml:base="/CS163-Projects-2025Fall/2024/01/01/team00-instruction-to-post.html"><![CDATA[<blockquote>
+  <p>This block is a brief introduction of your project. You can put your abstract here or any headers you want the readers to know.</p>
+</blockquote>
+
+<!--more-->
+<ul id="markdown-toc">
+  <li><a href="#main-content" id="markdown-toc-main-content">Main Content</a></li>
+  <li><a href="#basic-syntax" id="markdown-toc-basic-syntax">Basic Syntax</a>    <ul>
+      <li><a href="#image" id="markdown-toc-image">Image</a></li>
+      <li><a href="#table" id="markdown-toc-table">Table</a></li>
+      <li><a href="#code-block" id="markdown-toc-code-block">Code Block</a></li>
+      <li><a href="#formula" id="markdown-toc-formula">Formula</a></li>
+      <li><a href="#more-markdown-syntax" id="markdown-toc-more-markdown-syntax">More Markdown Syntax</a></li>
+    </ul>
+  </li>
+  <li><a href="#reference" id="markdown-toc-reference">Reference</a></li>
+</ul>
+
+<h2 id="main-content">Main Content</h2>
+<p>Your survey starts here. You can refer to the <a href="https://github.com/lilianweng/lil-log/tree/master/_posts">source code</a> of <a href="https://lilianweng.github.io/lil-log/">lil’s blogs</a> for article structure ideas or Markdown syntax. We’ve provided a <a href="https://ucladeepvision.github.io/CS188-Projects-2022Winter/2017/06/21/an-overview-of-deep-learning.html">sample post</a> from Lilian Weng and you can find the source code <a href="https://raw.githubusercontent.com/UCLAdeepvision/CS188-Projects-2022Winter/main/_posts/2017-06-21-an-overview-of-deep-learning.md">here</a></p>
+
+<h2 id="basic-syntax">Basic Syntax</h2>
+<h3 id="image">Image</h3>
+<p>Please create a folder with the name of your team id under /assets/images/, put all your images into the folder and reference the images in your main content.</p>
+
+<p style="width: 400px; max-width: 100%;">You can add an image to your survey like this:
+<img src="/CS163-Projects-2025Fall/assets/images/UCLAdeepvision/object_detection.png" alt="YOLO" /></p>
+<p><em>Fig 1. YOLO: An object detection method in computer vision</em> [1].</p>
+
+<p>Please cite the image if it is taken from other people’s work.</p>
+
+<h3 id="table">Table</h3>
+<p>Here is an example for creating tables, including alignment syntax.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left"> </th>
+      <th style="text-align: center">column 1</th>
+      <th style="text-align: right">column 2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">row1</td>
+      <td style="text-align: center">Text</td>
+      <td style="text-align: right">Text</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">row2</td>
+      <td style="text-align: center">Text</td>
+      <td style="text-align: right">Text</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="code-block">Code Block</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># This is a sample code block
+import torch
+print (torch.__version__)
+</code></pre></div></div>
+
+<h3 id="formula">Formula</h3>
+<p>Please use latex to generate formulas, such as:</p>
+
+\[\tilde{\mathbf{z}}^{(t)}_i = \frac{\alpha \tilde{\mathbf{z}}^{(t-1)}_i + (1-\alpha) \mathbf{z}_i}{1-\alpha^t}\]
+
+<p>or you can write in-text formula \(y = wx + b\).</p>
+
+<h3 id="more-markdown-syntax">More Markdown Syntax</h3>
+<p>You can find more Markdown syntax at <a href="https://www.markdownguide.org/basic-syntax/">this page</a>.</p>
+
+<h2 id="reference">Reference</h2>
+<p>Please make sure to cite properly in your work, for example:</p>
+
+<p>[1] Redmon, Joseph, et al. “You only look once: Unified, real-time object detection.” <em>Proceedings of the IEEE conference on computer vision and pattern recognition</em>. 2016.</p>
+
+<hr />]]></content><author><name>UCLAdeepvision</name></author><summary type="html"><![CDATA[This block is a brief introduction of your project. You can put your abstract here or any headers you want the readers to know.]]></summary></entry></feed>
